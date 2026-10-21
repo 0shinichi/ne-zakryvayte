@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Не закрывайте это окно</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#3b2f5c; --ink2:#7a6aa8; --paper:#fff8fd; --pink:#ff9fd2; --lilac:#b9a3ff; --sky:#c6e6ff;
+  --tension:0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#e6d4ff;color:var(--ink);
+  font:14px/1.35 Nunito,Tahoma,Verdana,sans-serif;user-select:none;-webkit-user-select:none}
+.px{font-family:"Pixelify Sans",Tahoma,monospace}
+
+/* ---------- рабочий стол ---------- */
+#desk{position:fixed;inset:0 0 40px 0;overflow:hidden;
+  background:linear-gradient(160deg,#c6e6ff 0%,#e6d4ff 45%,#ffd6ec 100%);
+  filter:saturate(calc(1 + var(--tension)*.7)) hue-rotate(calc(var(--tension)*-25deg));
+  transition:filter 1.5s}
+#desk::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 40% 18% at 20% 30%,#fff9 0,#fff0 70%),
+             radial-gradient(ellipse 35% 14% at 75% 18%,#fff8 0,#fff0 70%),
+             radial-gradient(ellipse 50% 20% at 60% 80%,#fff6 0,#fff0 70%)}
+.spark{position:absolute;color:#fff;text-shadow:0 0 6px #fff,0 0 12px #ffb3dc;pointer-events:none;
+  animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
+.icons{position:absolute;left:14px;top:14px;display:flex;flex-direction:column;gap:14px}
+.icon{width:84px;text-align:center;font-size:12px;cursor:default}
+.icon i{display:block;font-style:normal;font-size:30px;filter:drop-shadow(0 2px 0 #fff8)}
+.icon span{background:#fff8;border-radius:3px;padding:0 3px}
+
+/* ---------- окна ---------- */
+.win{position:absolute;background:var(--paper);border:1px solid #6b5aa0;border-radius:6px 6px 4px 4px;
+  box-shadow:3px 3px 0 #3b2f5c55,inset 0 0 0 1px #fff;animation:pop .22s cubic-bezier(.3,1.6,.6,1);overflow:hidden}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.win.closing{animation:shut .16s ease-in forwards}
+@keyframes shut{to{transform:scale(.85);opacity:0}}
+.win.wiggle{animation:wig .35s}
+@keyframes wig{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.win.stale .body{filter:contrast(1.15) saturate(1.3);text-shadow:1px 0 #ff9fd288,-1px 0 #8fd0ff88}
+.bar{display:flex;align-items:center;height:26px;padding:0 4px 0 8px;cursor:grab;touch-action:none;
+  background:linear-gradient(90deg,var(--pink),var(--lilac));color:#fff;text-shadow:1px 1px 0 #6b5aa0;
+  font-family:"Pixelify Sans",Tahoma,monospace;font-size:13px}
+.bar:active{cursor:grabbing}
+.ttl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btns{display:flex;gap:3px}
+.btns b{width:18px;height:18px;display:grid;place-items:center;background:#fff;color:var(--ink);
+  border:1px solid #6b5aa0;border-radius:3px;font:700 12px/1 Tahoma,sans-serif;cursor:pointer;text-shadow:none;
+  box-shadow:inset -1px -1px 0 #d9c8ff}
+.btns b:hover{background:#ffe3f3}
+.btns b.x:hover{background:#ff9fd2;color:#fff}
+.body{padding:10px 12px}
+button.y2k{font:600 13px "Pixelify Sans",Tahoma,monospace;color:var(--ink);background:linear-gradient(#fff,#f1e8ff);
+  border:1px solid #6b5aa0;border-radius:4px;padding:5px 12px;cursor:pointer;box-shadow:2px 2px 0 #3b2f5c44}
+button.y2k:hover{background:linear-gradient(#fff,#ffe3f3)}
+button.y2k:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #3b2f5c44}
+
+.msgs{display:flex;flex-direction:column;gap:6px;height:170px;overflow:hidden;justify-content:flex-end}
+.msg{background:#f1e8ff;border-radius:10px 10px 10px 2px;padding:5px 9px;max-width:88%;animation:pop .2s}
+.msg b{display:block;font-size:11px;color:var(--ink2)}
+.viz{display:flex;align-items:flex-end;gap:3px;height:38px;margin:8px 0}
+.viz i{flex:1;background:linear-gradient(var(--pink),var(--lilac));border-radius:2px 2px 0 0;animation:vz .8s ease-in-out infinite alternate}
+@keyframes vz{from{height:15%}to{height:100%}}
+.prog{height:12px;border:1px solid #6b5aa0;border-radius:3px;background:#fff;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--pink) 0 8px,var(--lilac) 8px 16px)}
+.prog.loop i{animation:pl 9s linear infinite}
+@keyframes pl{to{width:100%}}
+.feed{height:200px;overflow:hidden;display:flex;flex-direction:column;gap:8px;justify-content:flex-end}
+.post{border:1px solid #e3d6ff;border-radius:6px;padding:6px 8px;background:#fff;animation:pop .2s}
+.post small{color:var(--ink2)}
+.big{font:600 28px "Pixelify Sans",Tahoma,monospace;margin:4px 0}
+.mute{color:var(--ink2);font-size:12px}
+.mail div{border-bottom:1px dashed #d9c8ff;padding:4px 0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:pop .2s}
+.mail div::before{content:"✉ ";color:var(--pink)}
+.w-ad .body{background:radial-gradient(circle at 30% 20%,#fff 0,#ffe3f3 40%,#e6d4ff 100%);text-align:center}
+.w-ad .big{color:#ff5fb4;text-shadow:2px 2px 0 #fff}
+.w-anchor{border-width:2px}
+.w-anchor .bar{background:linear-gradient(90deg,#8fd0ff,var(--lilac))}
+.w-anchor .body{text-align:center;padding:16px 14px}
+.w-confirm .bar{background:linear-gradient(90deg,#ffb3b3,var(--pink))}
+.row{display:flex;gap:8px;justify-content:center;margin-top:10px}
+
+/* ---------- панель задач ---------- */
+#task{position:fixed;left:0;right:0;bottom:0;height:40px;display:flex;align-items:center;gap:10px;padding:0 8px;
+  background:linear-gradient(#fff,#efe6ff);border-top:1px solid #6b5aa0;font-family:"Pixelify Sans",Tahoma,monospace;z-index:100000}
+#start{background:linear-gradient(90deg,var(--pink),var(--lilac));color:#fff;border:1px solid #6b5aa0;border-radius:14px;
+  padding:3px 14px;text-shadow:1px 1px 0 #6b5aa0}
+#stat{flex:1;color:var(--ink2);font-size:13px;white-space:nowrap;overflow:hidden}
+#tray{display:flex;gap:10px;align-items:center;font-size:13px}
+#bell{background:#ff5fb4;color:#fff;border-radius:9px;padding:0 7px;min-width:20px;text-align:center}
+
+/* ---------- заставка и финал ---------- */
+.overlay{position:fixed;inset:0;display:grid;place-items:center;z-index:200000;padding:16px}
+#intro{background:#3b2f5c33;backdrop-filter:blur(2px)}
+#intro .win{position:relative;width:min(380px,100%);animation:none}
+#intro .body{text-align:center;padding:20px}
+#intro h1{font:600 22px "Pixelify Sans",Tahoma,monospace;margin:0 0 8px}
+#end{background:#fbf8ff;opacity:0;pointer-events:none;transition:opacity 2.5s;text-align:center}
+#end.on{opacity:1;pointer-events:auto}
+#end .silence{font:400 15px "Pixelify Sans",Tahoma,monospace;letter-spacing:.3em;color:#b8acd6}
+#end .timer{font:300 64px Nunito,sans-serif;color:#cfc6e6;margin:6px 0 0;font-variant-numeric:tabular-nums}
+#toast{position:fixed;right:16px;bottom:16px;width:min(300px,calc(100% - 32px));transform:translateY(140%);transition:transform .5s cubic-bezier(.3,1.4,.6,1);text-align:left}
+#toast.on{transform:none}
+#final{opacity:0;transition:opacity 2s;margin-top:28px;color:var(--ink2)}
+#final.on{opacity:1}
+#final p{margin:6px 0}
+#final a{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.spark,.viz i{animation:none}}
+</style>
+</head>
+<body>
+<div id="desk">
+  <div class="icons">
+    <div class="icon"><i>🗑️</i><span>корзина (полна)</span></div>
+    <div class="icon"><i>📁</i><span>мои документы</span></div>
+    <div class="icon"><i>💾</i><span>воспоминания.zip</span></div>
+    <div class="icon"><i>📷</i><span>лето 2007</span></div>
+  </div>
+</div>
+
+<div id="task">
+  <span id="start">✿ пуск</span>
+  <span id="stat">окон открыто: 0</span>
+  <span id="tray"><span id="bell">0</span><span id="clock">00:00</span></span>
+</div>
+
+<div id="intro" class="overlay">
+  <div class="win">
+    <div class="bar"><span class="ttl">💿 не_закрывайте_это_окно.exe</span><span class="btns"><b>_</b><b>□</b><b>×</b></span></div>
+    <div class="body">
+      <h1>Не закрывайте это окно</h1>
+      <p class="mute">интерактивная работа · 3–5 минут<br>лучше в наушниках 🎧</p>
+      <p style="margin:14px 0 16px">Закрывайте всё, что откроется.<br>Посмотрим, что останется.</p>
+      <button class="y2k" id="go">▶ включить</button>
+    </div>
+  </div>
+</div>
+
+<div id="end" class="overlay">
+  <div>
+    <div class="silence">тишина</div>
+    <div class="timer" id="stimer">00:00</div>
+    <div id="final">
+      <p id="sum"></p>
+      <p><b>Мы всегда возвращаемся.</b></p>
+      <div class="row">
+        <button class="y2k" onclick="location.reload()">↻ открыть снова</button>
+        <button class="y2k" onclick="location.href='about.html'">об этой работе</button>
+      </div>
+    </div>
+  </div>
+  <div class="win" id="toast">
+    <div class="bar"><span class="ttl">🔔 уведомление</span><span class="btns"><b class="x">×</b></span></div>
+    <div class="body" id="toastTxt"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.random()*a.length|0];
+const fmt=s=>{s=Math.max(0,Math.floor(s));return String(s/60|0).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+const desk=$("#desk");
+
+/* ================= ЗВУК (всё синтезируется) ================= */
+let AC,master,noiseBuf,pad,hum,drone;
+function initAudio(){
+  AC=new (window.AudioContext||window.webkitAudioContext)();
+  const comp=AC.createDynamicsCompressor();comp.threshold.value=-20;comp.ratio.value=4;
+  master=AC.createGain();master.gain.value=.85;master.connect(comp);comp.connect(AC.destination);
+  noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
+  const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+
+  // плеер: мягкие аккорды
+  pad={g:AC.createGain(),f:AC.createBiquadFilter(),o:[]};
+  pad.g.gain.value=0;pad.f.type="lowpass";pad.f.frequency.value=700;pad.f.connect(pad.g);pad.g.connect(master);
+  const chords=[[261.6,329.6,392,493.9],[220,261.6,329.6,392],[174.6,220,261.6,329.6],[196,246.9,293.7,329.6]];
+  for(let i=0;i<4;i++){const o=AC.createOscillator();o.type="triangle";o.frequency.value=chords[0][i];o.detune.value=rnd(-7,7);o.connect(pad.f);o.start();pad.o.push(o)}
+  let ci=0;setInterval(()=>{ci=(ci+1)%4;pad.o.forEach((o,i)=>o.frequency.setTargetAtTime(chords[ci][i],AC.currentTime,.4))},4000);
+
+  // загрузка: тонкий писк с биениями
+  hum={g:AC.createGain(),a:AC.createOscillator(),b:AC.createOscillator()};
+  hum.g.gain.value=0;hum.a.frequency.value=880;hum.b.frequency.value=882;
+  hum.a.connect(hum.g);hum.b.connect(hum.g);hum.g.connect(master);hum.a.start();hum.b.start();
+
+  // якорное окно: тихий гул присутствия
+  drone={g:AC.createGain()};drone.g.gain.value=0;drone.g.connect(master);
+  [220,330.4,440.8].forEach((f,i)=>{const o=AC.createOscillator();o.frequency.value=f;const g=AC.createGain();g.gain.value=[1,.5,.2][i];o.connect(g);g.connect(drone.g);o.start()});
+}
+function blip(freq,{type="sine",dur=.6,vol=.2,attack=.005,when=0,slide=0}={}){
+  if(!AC)return;const t=AC.currentTime+when;
+  const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.05);
+}
+function noise({dur=.05,vol=.08,freq=3000,q=1,to=0,when=0}={}){
+  if(!AC)return;const t=AC.currentTime+when;
+  const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();f.type="bandpass";f.Q.value=q;
+  f.frequency.setValueAtTime(freq,t);if(to)f.frequency.exponentialRampToValueAtTime(to,t+dur);
+  const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.01,dur/3));
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(g);g.connect(master);s.start(t,rnd(0,1.5));s.stop(t+dur+.05);
+}
+const SND={
+  ping(){const f=pick([1046.5,1174.7,1318.5,1568,1760]);blip(f,{vol:.11,dur:.55});blip(f*2,{vol:.03,dur:.3})},
+  bell(){if(!AC)return;const t=AC.currentTime,f=pick([659.3,784,880]);
+    const c=AC.createOscillator(),m=AC.createOscillator(),mg=AC.createGain(),g=AC.createGain();
+    c.frequency.value=f;m.frequency.value=f*3.5;mg.gain.setValueAtTime(f*2,t);mg.gain.exponentialRampToValueAtTime(1,t+1.5);
+    m.connect(mg);mg.connect(c.frequency);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+2.2);
+    c.connect(g);g.connect(master);c.start(t);m.start(t);c.stop(t+2.3);m.stop(t+2.3)},
+  sparkle(){const b=pick([1318.5,1568,1760]);[1,1.25,1.5,2].forEach((k,i)=>blip(b*k,{type:"triangle",when:i*.06,vol:.05,dur:.35}))},
+  typing(){const n=rnd(5,11)|0;let w=0;for(let i=0;i<n;i++){w+=rnd(.05,.14);noise({dur:.025,vol:.07,freq:rnd(2500,4000),q:3,when:w})}},
+  whoosh(){noise({dur:.7,vol:.045,freq:400,to:2600,q:2})},
+  beat(v){blip(70,{vol:v,dur:.16,slide:40});blip(65,{vol:v*.8,dur:.16,slide:38,when:.19})},
+  open(){blip(rnd(480,720),{type:"square",vol:.025,dur:.07})},
+  close(){blip(520,{vol:.07,dur:.12,slide:260})},
+  deny(){blip(180,{type:"square",vol:.04,dur:.15});blip(150,{type:"square",vol:.04,dur:.15,when:.12})}
+};
+
+/* слои: громкость растёт с числом окон этого типа */
+const counts={chat:0,player:0,feed:0,load:0,remind:0,screen:0,mail:0,ad:0};
+function setCount(type,d){
+  if(!(type in counts))return;counts[type]=Math.max(0,counts[type]+d);
+  if(!AC)return;const t=AC.currentTime,p=counts.player,h=counts.load;
+  pad.g.gain.setTargetAtTime(p?.045+.02*Math.min(p,4):0,t,.5);
+  pad.f.frequency.setTargetAtTime(600+Math.min(p,5)*420,t,.5);
+  hum.g.gain.setTargetAtTime(h?.01*Math.min(h,5):0,t,.4);
+  hum.b.frequency.setTargetAtTime(882+h*2.5,t,.4);
+}
+let ended=false;
+(function heart(){
+  if(ended)return;const n=counts.screen;
+  if(n)SND.beat(Math.min(.38,.18+n*.05));
+  setTimeout(heart,n?Math.max(430,1000-openCount()*22):500);
+})();
+
+/* ================= ОКНА ================= */
+const SENDERS=["мама","староста","★ лиза ★","неизвестный номер","чат группы (99+)","курьер","бывший","работа"];
+const MSGS=["ты дома?","ответь пж","скинь домашку","видела??","ты онлайн, но не отвечаешь","ок","?","🎤 голосовое 0:47","ты где","срочно","(╥﹏╥)","ну и ладно","позвони как сможешь","прочитано ✓✓","есть минутка?","ты обиделась?","напомни потом","😂😂😂","ау"];
+const POSTS=["у всех всё хорошо ✨","посмотри, как я отдыхаю 🌴","17 способов стать продуктивнее","ты отстаёшь","утро, кофе, успех ☕","мне 20, и у меня уже бизнес","тебе тоже кажется, что время ускорилось?","новый тренд: ничего не делать (смотреть видео об этом)","ʕ•ᴥ•ʔ доброе утро","осталось 3 места!","ты это пропустила","сравни себя с ними"];
+const SUBJ=["Re: Re: Re: срочно","ваш заказ задерживается","последнее напоминание о дедлайне","мы скучаем по вам!","подтвердите, что вы человек","скидка 70% только сегодня","вы забыли товар в корзине","новый вход в аккаунт","ваш отчёт за неделю: +14% экранного времени","приглашение: созвон в 23:00"];
+const REMIND=["выпить воды 💧","дедлайн через 2 дня","вы не заходили 3 часа","сделайте перерыв (но не сейчас)","день рождения у кого-то, кого вы не помните","пора спать. ещё одно видео?","обновите приложение","запишитесь к врачу (3-е напоминание)"];
+const TRACKS=["lofi beats to ignore notifications to","звуки дождя (10 часов)","фоновая музыка для фоновой жизни","спокойствие.mp3 (реклама через 5 сек)"];
+
+const TYPES={
+  chat:{icon:"💬",w:260,title:()=>"сообщения — "+pick(SENDERS),render(b,w){
+    b.innerHTML='<div class="msgs"></div>';const box=b.firstChild;
+    const add=()=>{const m=document.createElement("div");m.className="msg";m.innerHTML="<b>"+pick(SENDERS)+"</b>"+pick(MSGS);
+      box.appendChild(m);while(box.children.length>5)box.firstChild.remove();SND.ping()};
+    add();w.every(add,1800,4200)}},
+  player:{icon:"🎵",w:290,title:()=>"плеер",render(b){
+    b.innerHTML='<div class="mute">♫ сейчас играет</div><div><b>'+pick(TRACKS)+'</b></div><div class="viz">'+
+      Array.from({length:18},()=>'<i style="animation-delay:-'+rnd(0,.8).toFixed(2)+'s;animation-duration:'+rnd(.5,1.1).toFixed(2)+'s"></i>').join("")+
+      '</div><div class="prog loop"><i></i></div>'}},
+  feed:{icon:"📱",w:260,title:()=>"лента",render(b,w){
+    b.innerHTML='<div class="feed"></div>';const box=b.firstChild;
+    const add=()=>{const p=document.createElement("div");p.className="post";p.innerHTML=pick(POSTS)+'<br><small>♥ '+(rnd(12,9999)|0).toLocaleString("ru")+'</small>';
+      box.appendChild(p);while(box.children.length>5)box.firstChild.remove();SND.whoosh()};
+    add();w.every(add,1200,2600)}},
+  load:{icon:"⏳",w:280,title:()=>"обновление",render(b,w){
+    b.innerHTML='<div>обновление личности…</div><div class="big" style="font-size:22px">0%</div><div class="prog"><i></i></div><div class="mute" style="margin-top:6px">не выключайте устройство</div>';
+    const pct=b.querySelector(".big"),bar=b.querySelector(".prog i");let p=0;
+    w.every(()=>{p+=(99.9-p)*.07;pct.textContent=p.toFixed(1)+"%";bar.style.width=p+"%"},300,500)}},
+  remind:{icon:"⏰",w:250,title:()=>"напоминание",render(b,w){
+    let n=1;const txt=pick(REMIND);
+    b.innerHTML='<div class="big" style="font-size:18px">⏰ '+txt+'</div><div class="mute">напоминание</div>';
+    const m=b.querySelector(".mute");SND.bell();
+    w.every(()=>{n++;m.textContent="повторное напоминание ("+n+")";SND.bell()},6000,10000)}},
+  screen:{icon:"📊",w:260,title:()=>"время экрана",render(b,w){
+    let s=9*3600+41*60+rnd(0,59),pc=23;
+    b.innerHTML='<div class="mute">время экрана сегодня</div><div class="big"></div><div class="mute"></div>';
+    const big=b.querySelector(".big"),m=b.querySelectorAll(".mute")[1];
+    const upd=()=>{s+=rnd(3,9);pc+=Math.random()<.3?1:0;big.textContent=(s/3600|0)+" ч "+String((s%3600)/60|0).padStart(2,"0")+" мин "+String(s%60|0).padStart(2,"0")+" с";m.textContent="на "+pc+"% больше, чем вчера"};
+    upd();w.every(upd,900,1100)}},
+  mail:{icon:"📧",w:280,title:()=>"почта",render(b,w){
+    let n=rnd(100,140)|0;
+    b.innerHTML='<div><b>входящие (<span>'+n+'</span>)</b></div><div class="mail"></div>';
+    const c=b.querySelector("span"),box=b.querySelector(".mail");
+    const add=()=>{n++;c.textContent=n;const d=document.createElement("div");d.textContent=pick(SUBJ);box.prepend(d);
+      while(box.children.length>5)box.lastChild.remove();SND.typing()};
+    add();add();w.every(add,2000,4200)}},
+  ad:{icon:"✧",w:240,title:()=>"реклама",render(b,w){
+    b.innerHTML='<div class="mute">✧ поздравляем ✧</div><div class="big">ВЫ ВЫИГРАЛИ</div><div>вы — 1 000 000-й посетитель</div><div class="row"><button class="y2k">забрать приз ♥</button></div>';
+    SND.sparkle();w.every(SND.sparkle,4000,7000);
+    b.querySelector("button").onclick=e=>{e.stopPropagation();SND.sparkle();
+      for(let i=0;i<2;i++)if(spawned<TOTAL){spawned++;makeWin("ad")}}}}
+};
+
+let z=10,spawned=0,closed=0,startT=0,anchorWin=null;
+const TOTAL=56,MAXOPEN=26;
+const openWins=()=>[...document.querySelectorAll("#desk .win:not(.closing):not(.w-anchor)")];
+const openCount=()=>openWins().length;
+
+function makeWin(type,opt={}){
+  const def=TYPES[type]||opt.def;
+  const w=document.createElement("div");w.className="win w-"+type;w._alive=true;w._type=type;
+  const W=Math.min(def.w,innerWidth-16);w.style.width=W+"px";
+  w.innerHTML='<div class="bar"><span class="ttl">'+def.icon+" "+(opt.title||def.title())+'</span><span class="btns"><b class="mn">_</b><b class="mx">□</b><b class="x">×</b></span></div><div class="body"></div>';
+  w.every=(fn,a,b)=>{const loop=()=>{if(!w._alive||ended)return;fn();setTimeout(loop,rnd(a,b))};setTimeout(loop,rnd(a,b))};
+  desk.appendChild(w);
+  def.render(w.querySelector(".body"),w);
+  const H=w.offsetHeight,dh=desk.clientHeight;
+  w.style.left=(opt.x!=null?opt.x:rnd(8,Math.max(8,innerWidth-W-8)))+"px";
+  w.style.top=(opt.y!=null?opt.y:rnd(8,Math.max(8,dh-H-8)))+"px";
+  w.style.zIndex=++z;
+  w.addEventListener("pointerdown",()=>{w.style.zIndex=++z});
+  drag(w);
+  w.querySelector(".mn").onclick=w.querySelector(".mx").onclick=()=>{wiggle(w);SND.deny()};
+  w.querySelector(".x").onclick=e=>{e.stopPropagation();(opt.onClose||tryClose)(w)};
+  setTimeout(()=>w._alive&&w.classList.add("stale"),25000);
+  setCount(type,1);SND.open();updateUI();
+  return w;
+}
+function wiggle(w){w.classList.remove("wiggle");void w.offsetWidth;w.classList.add("wiggle")}
+function drag(w){
+  const bar=w.querySelector(".bar");let sx,sy,ox,oy;
+  bar.addEventListener("pointerdown",e=>{if(e.target.closest(".btns"))return;bar.setPointerCapture(e.pointerId);sx=e.clientX;sy=e.clientY;ox=w.offsetLeft;oy=w.offsetTop});
+  bar.addEventListener("pointermove",e=>{if(sx==null||!bar.hasPointerCapture(e.pointerId))return;
+    w.style.left=Math.min(innerWidth-60,Math.max(-w.offsetWidth+60,ox+e.clientX-sx))+"px";
+    w.style.top=Math.min(desk.clientHeight-26,Math.max(0,oy+e.clientY-sy))+"px"});
+  bar.addEventListener("pointerup",()=>{sx=null});
+}
+function closeWin(w){
+  if(!w._alive)return;w._alive=false;setCount(w._type,-1);
+  w.classList.add("closing");setTimeout(()=>w.remove(),170);
+  closed++;SND.close();updateUI();
+}
+function tryClose(w){
+  if(w._type!=="confirm"&&Math.random()<.14&&openCount()>2){ // «вы уверены?»
+    const r=w.getBoundingClientRect();
+    const c=makeWin("confirm",{title:"вы уверены?",x:Math.max(8,Math.min(innerWidth-268,r.left+20)),y:Math.max(8,r.top+30),
+      def:{icon:"⚠",w:260,title:()=>"",render(b){
+        b.innerHTML='<div>закрыть это окно?<br><span class="mute">вы можете пропустить что-то важное (。•́︿•̀。)</span></div><div class="row"><button class="y2k" data-a="1">закрыть</button><button class="y2k">остаться</button></div>';
+      }}});
+    c.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{if(btn.dataset.a)closeWin(w);closeWin(c)});
+    SND.deny();return;
+  }
+  closeWin(w);
+}
+
+/* якорное окно: его нельзя закрыть, пока открыто что-то ещё */
+function makeAnchor(){
+  const w=makeWin("anchor",{title:"не закрывайте это окно",
+    x:Math.max(8,innerWidth/2-150),y:Math.max(8,desk.clientHeight/2-80),
+    def:{icon:"🪟",w:300,title:()=>"",render(b){b.innerHTML='<div class="big" style="font-size:18px" id="anTxt">пока это окно открыто —<br>вы здесь.</div><div class="mute" id="anSub"></div>'}},
+    onClose:anchorClose});
+  anchorWin=w;
+}
+const unlocked=()=>spawned>=TOTAL&&openCount()===0;
+function anchorClose(w){
+  if(!unlocked()){wiggle(w);SND.deny();
+    $("#anSub").textContent=pick(["ещё рано.","у вас "+openCount()+" непрочитанных.","сначала — всё остальное.","не сейчас."]);return}
+  w._alive=false;w.classList.add("closing");setTimeout(()=>w.remove(),170);closed++;finish();
+}
+
+/* поток окон */
+const ORDER=["chat","player","remind","feed","load","screen","mail","ad"];
+function spawnNext(){
+  spawned++;
+  const type=spawned<=ORDER.length?ORDER[spawned-1]:pick(["chat","chat","feed","remind","mail","ad","load","screen","player","chat","ad"]);
+  makeWin(type);
+}
+function schedule(){
+  if(ended||spawned>=TOTAL)return;
+  const el=(performance.now()-startT)/1000;
+  let d=Math.max(900,5200-el*28)*rnd(.7,1.3);
+  if(openCount()===0)d=Math.min(d,1100);
+  setTimeout(()=>{if(ended)return;if(openCount()<MAXOPEN&&spawned<TOTAL)spawnNext();schedule()},d);
+}
+
+function updateUI(){
+  const n=openCount();
+  $("#stat").textContent="окон открыто: "+n+" · закрыто: "+closed;
+  $("#bell").textContent=n;
+  desk.style.setProperty("--tension",(n/MAXOPEN).toFixed(2));
+  if(anchorWin&&anchorWin._alive){
+    const t=$("#anTxt"),s=$("#anSub");
+    if(unlocked()){t.innerHTML="всё закрыто.<br>теперь — можно.";s.textContent="";
+      if(AC)drone.g.gain.setTargetAtTime(.05,AC.currentTime,1.5)}
+    else if(n===0&&spawned>0){s.textContent="тихо. пока что."}
+    else s.textContent=n?"окон открыто: "+n:"";
+  }
+}
+setInterval(()=>{const d=new Date();$("#clock").textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")},1000);
+
+/* финал: тишина, которую прерывает уведомление */
+function finish(){
+  ended=true;const total=(performance.now()-startT)/1000;
+  if(AC){const t=AC.currentTime;[pad.g,hum.g,drone.g].forEach(g=>g.gain.setTargetAtTime(0,t,.8))}
+  $("#end").classList.add("on");
+  const s0=performance.now(),wait=rnd(24,42)*1000;let stop=false;
+  (function tick(){if(stop)return;$("#stimer").textContent=fmt((performance.now()-s0)/1000);requestAnimationFrame(tick)})();
+  setTimeout(()=>{
+    stop=true;const sil=fmt(wait/1000);
+    $("#toastTxt").innerHTML="вас не было "+sil+".<br>всё в порядке?";
+    $("#toast").classList.add("on");SND.ping();
+    $("#toast .x").onclick=()=>$("#toast").classList.remove("on");
+    setTimeout(()=>{$("#sum").textContent="Вы закрыли окон: "+closed+" за "+fmt(total)+". Тишина продержалась "+sil+".";$("#final").classList.add("on")},2500);
+  },wait);
+}
+
+/* старт */
+for(let i=0;i<22;i++){const s=document.createElement("span");s.className="spark";s.textContent=pick(["✦","✧","⋆","✦"]);
+  s.style.left=rnd(0,100)+"%";s.style.top=rnd(0,100)+"%";s.style.fontSize=rnd(10,26)+"px";s.style.animationDelay=-rnd(0,3)+"s";desk.prepend(s)}
+document.querySelectorAll(".icon").forEach(ic=>ic.ondblclick=()=>{SND.deny();ic.animate([{transform:"translateX(-4px)"},{transform:"translateX(4px)"},{transform:"none"}],{duration:250})});
+$("#go").onclick=()=>{
+  initAudio();$("#intro").remove();startT=performance.now();
+  makeAnchor();setTimeout(schedule,2500);
+};
+</script>
+</body>
+</html>
